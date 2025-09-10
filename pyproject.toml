@@ -7,11 +7,35 @@ authors = [
     { name = "Sattwik Kumar Sahu", email = "sattwik21@iiserb.ac.in" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "accelerate>=1.10.1",
+    "anytraverse>=1.0.4",
+    "einops>=0.8.1",
+    "numpy>=2.3.3",
+    "open3d>=0.19.0",
+    "scipy>=1.16.1",
+    "torch>=2.8.0",
+    "torchvision>=0.23.0",
+    "transformers>=4.56.1",
+]
 
 [project.scripts]
 anytpp = "anytpp:main"
 
+[project.optional-dependencies]
+plot = [
+    "matplotlib>=3.10.6",
+    "seaborn>=0.13.2",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ipython>=9.5.0",
+    "jupyter>=1.1.1",
+    "pytest>=8.4.2",
+    "ruff>=0.12.12",
+]
