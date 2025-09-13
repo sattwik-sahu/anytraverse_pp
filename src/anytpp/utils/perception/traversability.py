@@ -35,13 +35,19 @@ class AnyTraversePlusPlusTraversabilitySegmentation:
         camera_extrinsics: npt.NDArray[np.float32],
         camera_intrinsics: npt.NDArray[np.float32],
     ) -> AnyTraversePlusPlusState:
+        # AnyTraverse for semantic traversability segmentation on image
         anytraverse_state = self._anytraverse.step(image=image)
         traversability_map = anytraverse_state.traversability_map
 
+        # Validate pointcloud points
         valid_pointcloud = get_valid_pointcloud(pointcloud=pointcloud)
+
+        # Reproject pointcloud onto image, find pixel indexes
         pointcloud_pixel_indexes = get_pixel_coordinates_from_pointcloud(
             pointcloud=pointcloud, camera_intrinsics=camera_intrinsics
         )
+
+        # Calculate surface normals for valid points
         surface_normals = (
             calculate_surface_normals(
                 pointcloud=valid_pointcloud,
@@ -50,10 +56,16 @@ class AnyTraversePlusPlusTraversabilitySegmentation:
             )
             @ camera_extrinsics[:3, :3]
         )
+
+        # Calculate slope scores (0: worst, 1: best)
         pointcloud_slope_scores = np.abs(surface_normals[:, 2])
+
+        # Semantic traversability scores from AnyTraverse
         pointcloud_semantic_traversability_scores = traversability_map[
             pointcloud_pixel_indexes
         ]
+
+        # Combined traversability scores
         pointcloud_traversability_scores = (
             pointcloud_slope_scores * pointcloud_semantic_traversability_scores.numpy()
         )
